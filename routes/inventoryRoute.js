@@ -1,6 +1,7 @@
 const express = require('express')
 const { models } = require('mongoose')
 const { type } = require('os')
+const inventory = require('../models/inventory.js')
 const inventoryRoute = express.Router
 const Item = require('../models/inventory.js')
 
@@ -39,7 +40,7 @@ inventoryRoute.post('/', (req, res, next) => {
 })
 
 // Delete An Entry
-inventoryRoute.delete('/:entryId', (req, res, next) =>
+inventoryRoute.delete('/:entryId', (req, res, next) => {
     Item.findOneAndDelete({ _id: req.params.entryId }, (err, deleted) => {
         if (err) {
             res.status(500)
@@ -51,18 +52,15 @@ inventoryRoute.delete('/:entryId', (req, res, next) =>
 
 // Edit An Entry
 inventoryRoute.put('/:entryId', (req, res, next) => {
-    Item.findOneAndUpdate({ _id: req.params.entryId }, (err, edited) => {
-        { _id: req.parmas.entryId },
-        req.body,
-            { new: true },
-            (err, entryUpdated) => {
-                if (err) {
-                    res.status(500)
-                    return next(err)
-                }
-                return res.status(201).send(entryUpdated)
+    Item.findOneAndUpdate({ _id: req.params.entryId },
+        req.body, { new: true }, (err, editedEntry) => {
+            if (err) {
+                res.status(500)
+                return next(err)
             }
-    })
+            return res.status(201).send(editedEntry)
+        }
+    )
 })
 
 models.exports = inventoryRoute
